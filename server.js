@@ -35,7 +35,14 @@ const server = http.createServer((req, res) => {
     /* ======================== ROUTE HANDLERS ========================== */
     // Phase 1: GET /
     if(req.method === 'GET' && req.url === '/'){
+        let htmlPage = fs.readFileSync('./views/new-player.html', 'utf-8')
 
+        resBody = htmlPage
+        .replace(/#{availableRooms}/g, world.availableRoomsToString());
+
+        res.statusCode = 200
+        res.setHeader('Content-Type', 'text/html')
+        res.end(resBody)
     }
     // Phase 2: POST /player
 
