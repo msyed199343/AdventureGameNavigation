@@ -34,7 +34,9 @@ const server = http.createServer((req, res) => {
 
     /* ======================== ROUTE HANDLERS ========================== */
     // Phase 1: GET /
+    if(req.method === 'GET' && req.url === '/'){
 
+    }
     // Phase 2: POST /player
 
     // Phase 3: GET /rooms/:roomId
