@@ -46,17 +46,49 @@ const server = http.createServer((req, res) => {
     }
     // Phase 2: POST /player
     if(req.method === 'POST' && req.url === '/player'){
-      let roomId = req.body.id
+      let roomId = req.body.roomId
       let roomInstance = world.rooms[roomId]
+
       player = new Player(req.body.name, roomInstance)
 
-
-      res.setHeader('Location', `/rooms/${roomId}`)
       res.statusCode = 302
+      res.setHeader('Location', `/rooms/${roomId}`)
       res.end()
       return
     }
     // Phase 3: GET /rooms/:roomId
+
+    if(req.method === 'GET' && req.url.startsWith('/rooms/') ){
+      const urlParts = req.url.split('/')
+      const roomId = urlParts[2]
+      const room = world.rooms[roomId]
+
+      let currentPlayerRoomId = player.currentRoom.id
+
+      if(Number(roomId) !== currentPlayerRoomId ){
+        res.statusCode = 302
+        res.setHeader('Location', `/rooms/${currentPlayerRoomId}`)
+        res.end()
+        return
+      }
+      if (urlParts.length === 3){
+
+
+          let htmlPage = fs.readFileSync('./views/room.html', 'utf-8')
+
+          const resBody = htmlPage
+          .replace(/#{roomName}/g, room.name)
+          .replace(/#{roomId}/g, roomId)
+          .replace(/#{roomItems}/g, room.itemsToString())
+          .replace(/#{inventory}/g, player.inventoryToString())
+          .replace(/#{exits}/g, room.exitsToString());
+
+              res.statusCode = 200
+              res.setHeader('Content-type', 'text/html')
+              return res.end(resBody)
+      }
+
+    }
 
     // Phase 4: GET /rooms/:roomId/:direction
 
