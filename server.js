@@ -91,6 +91,39 @@ const server = http.createServer((req, res) => {
     }
 
     // Phase 4: GET /rooms/:roomId/:direction
+      let urLength = req.url.split('/').length
+
+    if(req.method === 'GET' && req.url.startsWith('/rooms/') && urLength === 4){
+                let urlParts = req.url.split('/')
+                let roomId = urlParts[2]
+                let direction = urlParts[3]
+
+
+                let currentPlayerRoomId = player.currentRoom.id
+
+                if(Number(roomId) !== currentPlayerRoomId ){
+                  res.statusCode = 302
+                  res.setHeader('Location', `/rooms/${currentPlayerRoomId}`)
+                  res.end()
+                  return
+                }
+
+                try{
+                  player.move(direction[0])
+
+                  res.statusCode = 302
+                  res.setHeader('Location', `/rooms/${currentPlayerRoomId}`)
+                  res.end()
+                  return
+                } catch(err){
+                  res.statusCode = 302
+                  res.setHeader('Location', `/rooms/${roomId}`)
+                  res.end()
+                  return
+                }
+
+
+    }
 
     // Phase 5: POST /items/:itemId/:action
 
