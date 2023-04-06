@@ -130,7 +130,7 @@ const server = http.createServer((req, res) => {
             let urlParts = req.url.split('/') //['', items, :itemId, :action]
             let currentItemId = urlParts[2]
             let action = urlParts[3]
-            let currentRoom = player.currentRoom
+            let currentRoomId = player.currentRoom.id
 
           try{
             switch(action){
@@ -145,15 +145,23 @@ const server = http.createServer((req, res) => {
                   break;
             }
 
-            let randomNum = Mate.floor(Math.random() * 5)
+            //let randomNum = Math.floor(Math.random() * (6 - 1) + 1)
 
             res.statusCode = 302;
-            res.setHeader('Location',  `rooms/${randomNum}`)
+            res.setHeader('Location',  `/rooms/${currentRoomId}`)
             res.end()
             return
-          }
-          catch(e){
-              let htmlPage = fs.readFileSync('/views/error.html', 'utf-8')
+
+          }catch(e){
+              let htmlPage = fs.readFileSync('views/error.html', 'utf-8')
+
+            let resBody = htmlPage
+                .replace(/#{errorMessage}/g, e.message)
+                .replace(/#{roomId}/g, currentRoomId)
+
+              res.statusCode = 302
+              res.setHeader('Location', `/views/error.html`)
+              return res.end(resBody)
           }
       }
     // Phase 6: Redirect if no matching route handlers
