@@ -127,7 +127,34 @@ const server = http.createServer((req, res) => {
 
     // Phase 5: POST /items/:itemId/:action
       if(req.method === 'POST' && req.url.startsWith('/items/')){
+            let urlParts = req.url.split('/') //['', items, :itemId, :action]
+            let currentItemId = urlParts[2]
+            let action = urlParts[3]
+            let currentRoom = player.currentRoom
 
+          try{
+            switch(action){
+              case 'drop':
+                player.dropItem(currentItemId);
+                  break
+              case 'eat':
+                player.eatItem(currentItemId)
+                  break
+              case 'take':
+                player.takeItem(currentItemId);
+                  break;
+            }
+
+            let randomNum = Mate.floor(Math.random() * 5)
+
+            res.statusCode = 302;
+            res.setHeader('Location',  `rooms/${randomNum}`)
+            res.end()
+            return
+          }
+          catch(e){
+              let htmlPage = fs.readFileSync('/views/error.html', 'utf-8')
+          }
       }
     // Phase 6: Redirect if no matching route handlers
   })
